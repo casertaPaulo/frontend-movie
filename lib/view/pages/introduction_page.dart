@@ -48,6 +48,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
                   width: 150,
+                  height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFaf4a02),
