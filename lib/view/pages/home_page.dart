@@ -146,6 +146,7 @@ class _HomePageState extends State<HomePage> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
+                              color: isGrid ? Colors.amber : Colors.white,
                               border: Border.all(color: Colors.black),
                               borderRadius: BorderRadius.circular(15)),
                           child: const Icon(Icons.grid_view_sharp),
@@ -160,6 +161,7 @@ class _HomePageState extends State<HomePage> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
+                              color: !isGrid ? Colors.amber : Colors.white,
                               border: Border.all(color: Colors.black),
                               borderRadius: BorderRadius.circular(15)),
                           child:
