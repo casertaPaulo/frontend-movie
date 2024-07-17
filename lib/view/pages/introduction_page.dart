@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:movies/view/pages/home_page.dart';
+import 'package:movies/view/pages/home.dart';
 
 class IntroductionPage extends StatefulWidget {
   const IntroductionPage({super.key});
@@ -67,7 +67,7 @@ class _IntroductionPageState extends State<IntroductionPage> {
                       ],
                     ),
                     onPressed: () => {
-                      Get.to(() => const HomePage(),
+                      Get.to(() => const Home(),
                           transition: Transition.downToUp)
                     },
                   ),

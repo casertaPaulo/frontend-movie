@@ -72,6 +72,8 @@ class _HomePageState extends State<HomePage> {
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.search),
                           hintText: "Search a title",
+                          errorStyle:
+                              const TextStyle(fontFamily: "RobotoCondensed"),
                           focusedBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Color(0xFFaf4a02)),
                           ),
