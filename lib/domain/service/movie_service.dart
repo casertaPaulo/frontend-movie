@@ -26,6 +26,5 @@ class MovieService {
         jsonMap.map((json) => MovieEntity.fromJson(json)).toList();
 
     movieRepository.setMovies(movies);
-    print(response);
   }
 }
