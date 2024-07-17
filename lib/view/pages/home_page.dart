@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:movies/components/movie_container.dart';
+import 'package:movies/components/movie_grid_container.dart';
+import 'package:movies/components/movie_list_container.dart';
+import 'package:movies/domain/model/movie_entity.dart';
 import 'package:movies/domain/repository/movie_repository.dart';
 import 'package:movies/domain/service/movie_service.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool isGrid = true;
   late MovieService movieService;
   late TextEditingController _controller;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -135,22 +138,33 @@ class _HomePageState extends State<HomePage> {
                   ),
                   Row(
                     children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(15)),
-                        child: const Icon(Icons.grid_view_sharp),
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          isGrid = true;
+                        }),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(15)),
+                          child: const Icon(Icons.grid_view_sharp),
+                        ),
                       ),
                       const SizedBox(width: 15),
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(15)),
-                        child: const Icon(Icons.format_list_bulleted_outlined),
+                      GestureDetector(
+                        onTap: () => setState(() {
+                          isGrid = false;
+                        }),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(15)),
+                          child:
+                              const Icon(Icons.format_list_bulleted_outlined),
+                        ),
                       ),
                     ],
                   )
@@ -161,16 +175,13 @@ class _HomePageState extends State<HomePage> {
                 builder: (BuildContext context, value, Widget? child) {
                   if (value.searchResult.isNotEmpty) {
                     return Expanded(
-                      child: GridView.count(
-                        crossAxisSpacing: 10,
-                        childAspectRatio: 0.4,
-                        crossAxisCount: 2,
-                        children:
-                            List.generate(value.searchResult.length, (index) {
-                          return MovieContainer(
-                            movieEntity: value.searchResult[index],
-                          );
-                        }),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                              opacity: animation, child: child);
+                        },
+                        child: isGrid ? _gridView(value) : _listView(value),
                       ),
                     );
                   } else if (value.isLoading) {
@@ -225,4 +236,29 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+
+Widget _gridView(MovieRepository movieRepository) {
+  return GridView.count(
+    crossAxisSpacing: 10,
+    childAspectRatio: 0.4,
+    crossAxisCount: 2,
+    children: List.generate(movieRepository.searchResult.length, (index) {
+      return MovieGridContainer(
+        movieEntity: movieRepository.searchResult[index],
+      );
+    }),
+  );
+}
+
+Widget _listView(MovieRepository movieRepository) {
+  return ListView.separated(
+    key: const ValueKey<int>(2),
+    separatorBuilder: (context, index) => const Divider(),
+    itemBuilder: (context, index) {
+      return MovieListContainer(
+          movieEntity: movieRepository.searchResult[index]);
+    },
+    itemCount: movieRepository.searchResult.length,
+  );
 }
