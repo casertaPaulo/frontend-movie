@@ -29,7 +29,7 @@ class MovieContainer extends StatelessWidget {
               child: Text(
                 movieEntity.title,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontFamily: "LemonMilk",
                   fontWeight: FontWeight.w900,
                 ),
