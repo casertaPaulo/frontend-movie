@@ -5,7 +5,7 @@ import 'package:movies/data/model/movie_entity.dart';
 
 abstract class IMovieRepository {
   Future<List<MovieEntity>> searchMovies({required String title});
-  Future<List<MovieEntity>> getMovies();
+  Future<List<MovieEntity>> getMovies(String? param);
   Future saveMovie({required String title});
 }
 
@@ -38,8 +38,9 @@ class MovieRepository implements IMovieRepository {
   }
 
   @override
-  Future<List<MovieEntity>> getMovies() async {
-    final response = await client.get(url: "http://192.168.1.13:8080/movie");
+  Future<List<MovieEntity>> getMovies(String? param) async {
+    final response =
+        await client.get(url: "http://192.168.1.13:8080/movie$param");
 
     final stringJson = utf8.decode(response.bodyBytes);
     final body = jsonDecode(stringJson);
@@ -63,8 +64,12 @@ class MovieRepository implements IMovieRepository {
         await client.post(url: "http://192.168.1.13:8080/movie/$title");
     final body = jsonDecode(response.body);
 
-    if (response.statusCode != 200) {
-      throw NotFoundException(body['title'] + " " + body['detail']);
+    if (response.statusCode == 200) {
+      print(body);
+    } else if (response.statusCode == 400) {
+      throw MovieAlreadySavedException(body['title'] + " " + body['detail']);
+    } else {
+      throw Exception("Deu pau aqui.");
     }
   }
 }
