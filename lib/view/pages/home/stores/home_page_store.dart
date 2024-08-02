@@ -18,6 +18,8 @@ class HomePageStore {
   //react variavle for exception error state
   final ValueNotifier<String> error = ValueNotifier<String>("");
 
+  final ValueNotifier<String> feedbackResponse = ValueNotifier<String>("");
+
   Future searchMovies({required String title}) async {
     isLoading.value = true;
 
@@ -39,12 +41,17 @@ class HomePageStore {
   }
 
   Future saveMovie({required String title}) async {
+    isLoading.value = true;
+
     try {
-      movieRepository.saveMovie(title: title);
-    } on NotFoundException catch (e) {
-      error.value = e.message;
+      await movieRepository.saveMovie(title: title);
+      feedbackResponse.value = "Sucess";
+    } on MovieAlreadySavedException catch (e) {
+      feedbackResponse.value = e.message;
     } catch (e) {
-      error.value = e.toString();
+      feedbackResponse.value = e.toString();
     }
+
+    isLoading.value = false;
   }
 }
