@@ -9,3 +9,9 @@ class TooManyResultsException implements Exception {
 
   TooManyResultsException(this.message);
 }
+
+class MovieAlreadySavedException implements Exception {
+  final String message;
+
+  MovieAlreadySavedException(this.message);
+}
