@@ -17,11 +17,11 @@ class FavoritePageStore {
   //react variavle for exception error state
   final ValueNotifier<String> error = ValueNotifier<String>("");
 
-  Future getMovies() async {
+  Future getMovies(String? param) async {
     isLoading.value = true;
 
     try {
-      final result = await movieRepository.getMovies();
+      final result = await movieRepository.getMovies(param);
 
       state.value = result;
       error.value = "";

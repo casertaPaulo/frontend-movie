@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:movies/util/media_query.dart';
+import 'package:movies/view/util/media_query.dart';
 import 'package:movies/view/pages/favorite/favorite_page.dart';
 import 'package:movies/view/pages/home/home_page.dart';
 

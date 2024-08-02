@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:movies/components/movie_pageview_container.dart';
-import 'package:movies/components/movie_list_container.dart';
+import 'package:movies/view/components/movie_pageview_container.dart';
+import 'package:movies/view/components/movie_list_container.dart';
 import 'package:movies/data/http/http_client.dart';
 import 'package:movies/data/model/movie_entity.dart';
 import 'package:movies/data/repositories/movie_repository.dart';
@@ -17,10 +17,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final HomePageStore _homePageState =
       HomePageStore(movieRepository: MovieRepository(client: HttpClient()));
-  bool isGrid = true;
+  bool _isGrid = true;
+  int _currentIndex = 0;
 
   final TextEditingController _controller = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -31,6 +33,64 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void showSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _homePageState.feedbackResponse.value,
+          style: const TextStyle(
+            fontFamily: "LemonMilk",
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  Widget _carouselView(List<MovieEntity> movies) {
+    return CarouselSlider.builder(
+      itemCount: movies.length,
+      itemBuilder: (BuildContext context, index, realIndex) {
+        return GestureDetector(
+          onTap: () async {
+            await _homePageState.saveMovie(title: movies[index].title);
+
+            showSnackBar();
+          },
+          child: PageViewContainer(movieEntity: movies[index]),
+        );
+      },
+      options: CarouselOptions(
+        height: MediaQuery.of(context).size.height > 800 ? 500 : 450,
+        enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+        viewportFraction: 0.6,
+        initialPage: _currentIndex,
+        onPageChanged: (index, reason) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        enlargeCenterPage: true,
+      ),
+    );
+  }
+
+  Widget _listView(List<MovieEntity> movies) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30),
+      child: ListView.separated(
+        separatorBuilder: (context, index) => const Divider(),
+        itemBuilder: (context, index) {
+          return MovieListContainer(
+            movieEntity: movies[index],
+          );
+        },
+        itemCount: movies.length,
+      ),
+    );
   }
 
   @override
@@ -147,36 +207,36 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           GestureDetector(
                             onTap: () => setState(() {
-                              isGrid = true;
+                              _isGrid = true;
                             }),
                             child: Container(
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                  color: isGrid ? Colors.black : Colors.white,
+                                  color: _isGrid ? Colors.black : Colors.white,
                                   border: Border.all(color: Colors.black),
                                   borderRadius: BorderRadius.circular(15)),
                               child: Icon(
                                 Icons.grid_view_sharp,
-                                color: isGrid ? Colors.white : Colors.black,
+                                color: _isGrid ? Colors.white : Colors.black,
                               ),
                             ),
                           ),
                           const SizedBox(width: 15),
                           GestureDetector(
                             onTap: () => setState(() {
-                              isGrid = false;
+                              _isGrid = false;
                             }),
                             child: Container(
                               width: 40,
                               height: 40,
                               decoration: BoxDecoration(
-                                  color: !isGrid ? Colors.black : Colors.white,
+                                  color: !_isGrid ? Colors.black : Colors.white,
                                   border: Border.all(color: Colors.black),
                                   borderRadius: BorderRadius.circular(15)),
                               child: Icon(
                                 Icons.format_list_bulleted_outlined,
-                                color: !isGrid ? Colors.white : Colors.black,
+                                color: !_isGrid ? Colors.white : Colors.black,
                               ),
                             ),
                           ),
@@ -194,7 +254,8 @@ class _HomePageState extends State<HomePage> {
                 animation: Listenable.merge([
                   _homePageState.isLoading,
                   _homePageState.state,
-                  _homePageState.error
+                  _homePageState.error,
+                  _homePageState.feedbackResponse,
                 ]),
                 builder: (context, child) {
                   if (_homePageState.isLoading.value) {
@@ -212,9 +273,8 @@ class _HomePageState extends State<HomePage> {
                           child: child,
                         );
                       },
-                      child: isGrid
-                          ? _carouselView(_homePageState,
-                              _homePageState.state.value, context)
+                      child: _isGrid
+                          ? _carouselView(_homePageState.state.value)
                           : _listView(_homePageState.state.value),
                     );
                   }
@@ -277,41 +337,5 @@ Widget _errorResponseWidget(String error) {
         ),
       ),
     ],
-  );
-}
-
-Widget _carouselView(
-    HomePageStore state, List<MovieEntity> movies, BuildContext context) {
-  return CarouselSlider.builder(
-    itemCount: movies.length,
-    itemBuilder: (BuildContext context, index, realIndex) {
-      return GestureDetector(
-        onTap: () {
-          state.saveMovie(title: movies[index].title);
-        },
-        child: PageViewContainer(movieEntity: movies[index]),
-      );
-    },
-    options: CarouselOptions(
-      height: MediaQuery.of(context).size.height > 800 ? 500 : 400,
-      enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-      viewportFraction: 0.6,
-      enlargeCenterPage: true,
-    ),
-  );
-}
-
-Widget _listView(List<MovieEntity> movies) {
-  return Padding(
-    padding: const EdgeInsets.only(left: 30),
-    child: ListView.separated(
-      separatorBuilder: (context, index) => const Divider(),
-      itemBuilder: (context, index) {
-        return MovieListContainer(
-          movieEntity: movies[index],
-        );
-      },
-      itemCount: movies.length,
-    ),
   );
 }

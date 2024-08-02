@@ -16,6 +16,9 @@ class PageViewContainer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Row(
+            children: [Icon(Icons.check_circle_outline)],
+          ),
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Image.network(
