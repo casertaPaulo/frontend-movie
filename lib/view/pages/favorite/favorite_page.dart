@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:movies/components/movie_pageview_container.dart';
+import 'package:movies/view/components/movie_pageview_container.dart';
 import 'package:movies/data/http/http_client.dart';
 import 'package:movies/data/model/movie_entity.dart';
 import 'package:movies/data/repositories/movie_repository.dart';
@@ -18,12 +18,11 @@ class _FavoritePageState extends State<FavoritePage> {
       FavoritePageStore(movieRepository: MovieRepository(client: HttpClient()));
 
   bool isGrid = false;
-  int currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _favoritePageStore.getMovies();
+    _favoritePageStore.getMovies("");
   }
 
   @override
@@ -107,13 +106,59 @@ class _FavoritePageState extends State<FavoritePage> {
                   ),
                 ],
               ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50),
+                child: Divider(
+                  color: Color(0xFFaf4a02),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Choose Order",
+                style: TextStyle(
+                  fontFamily: "LemonMilk",
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.black)),
+                        onPressed: () {
+                          _favoritePageStore.getMovies("/ordered");
+                        },
+                        child: const Text(
+                          "By Title",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "RobotoCondensed"),
+                        )),
+                  ),
+                  SizedBox(
+                    width: 120,
+                    child: ElevatedButton(
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Colors.black)),
+                        onPressed: () {
+                          _favoritePageStore.getMovies("");
+                        },
+                        child: const Text(
+                          "By Default",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "RobotoCondensed"),
+                        )),
+                  ),
+                ],
+              ),
             ],
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50),
-          child: Divider(
-            color: Color(0xFFaf4a02),
           ),
         ),
         Expanded(
@@ -151,7 +196,7 @@ Widget _carouselView(List<MovieEntity> movies, BuildContext context) {
       return PageViewContainer(movieEntity: movies[index]);
     },
     options: CarouselOptions(
-      height: MediaQuery.of(context).size.height > 800 ? 500 : 400,
+      height: MediaQuery.of(context).size.height > 800 ? 500 : 450,
       enlargeStrategy: CenterPageEnlargeStrategy.zoom,
       viewportFraction: 0.6,
       enlargeCenterPage: true,
